@@ -1,7 +1,7 @@
 #!/bin/bash
 
 docker pull mbagliojr/zap2docker
-docker run --rm -v $(pwd):/zap/wrk/:rw -t ictu/zap2docker-weekly zap-baseline-custom.py -r testreport.html -g gen.conf -d -m 5 \
+docker run --rm -v $(pwd):/zap/wrk/:rw -t mbagliojr/zap2docker-weekly zap-baseline-custom.py -r report.html -g gen.conf -d -m 5 \
 -t http://www.website.com \
 --auth_loginurl "http://www.website.com/login" \
 --auth_username exampleuser \
