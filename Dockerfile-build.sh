@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t ictu/zap2docker-weekly .
+docker build -t mbagliojr/zap2docker .
