@@ -484,10 +484,13 @@ def main(argv):
                     try:
                         element = driver.find_element_by_name(name)
                     except NoSuchElementException:
-                        if xpath is None:
-                            raise
+                        try:
+                            element = driver.find_elements_by_class_name(name)[0]                       
+                        except NoSuchElementException:
+                            if xpath is None:
+                                raise
 
-                        element = driver.find_element_by_xpath(xpath)
+                            element = driver.find_element_by_xpath(xpath)
 
                 return element
 
