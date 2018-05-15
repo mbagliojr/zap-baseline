@@ -38,6 +38,7 @@ Manual authentication:
     --auth_usernamefield       username inputfield name (manual login)
     --auth_passwordfield       password inputfield name (manual login)
     --auth_submitfield         submit button name (manual login)
+    --auth_submitfieldText     submit button innerHTML (manual login)   
     --auth_firstsubmitfield    two page login (usernam -> first submit -> password -> submit) (manual login)
     --auth_exclude             comma separated list of URLs to exclude, supply all URLs causing logout (manual login)
 ```
