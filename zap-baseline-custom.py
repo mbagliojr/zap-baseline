@@ -107,6 +107,7 @@ def usage():
     print ('    --auth_usernamefield       username inputfield name')
     print ('    --auth_passwordfield       password inputfield name')
     print ('    --auth_submitfield         submit button name')
+    print ('    --auth_submitfieldText     submit button text')
     print ('    --auth_firstsubmitfield    two page login (usernam -> first submit -> password -> submit) (manual login)')
     print ('    --auth_exclude             comma separated list of URLs to exclude, supply all URLs causing logout')
 
@@ -183,6 +184,7 @@ def main(argv):
   auth_username_field_name = ''
   auth_password_field_name = ''
   auth_submit_field_name = ''
+  auth_submit_field_name_text = ''
   auth_first_submit_field_name = ''
   auth_excludeUrls = [];
 
@@ -193,7 +195,7 @@ def main(argv):
   ignore_count = 0
 
   try:
-    opts, args = getopt.getopt(argv,"t:c:u:g:m:r:w:x:l:daijsz:", ['auth_display', 'auth_loginurl=', 'auth_username=', 'auth_auto', 'auth_password=', 'auth_usernamefield=', 'auth_passwordfield=', 'auth_firstsubmitfield=', 'auth_submitfield=', 'auth_exclude=', 'active_scan'])
+    opts, args = getopt.getopt(argv,"t:c:u:g:m:r:w:x:l:daijsz:", ['auth_display', 'auth_loginurl=', 'auth_username=', 'auth_auto', 'auth_password=', 'auth_usernamefield=', 'auth_passwordfield=', 'auth_firstsubmitfield=', 'auth_submitfield=', 'auth_submitfieldText=', 'auth_exclude=', 'active_scan'])
   except getopt.GetoptError, exc:
     logging.warning ('Invalid option ' + exc.opt + ' : ' + exc.msg)
     usage()
@@ -243,6 +245,8 @@ def main(argv):
       auth_password_field_name = arg
     elif opt == "--auth_submitfield":
       auth_submit_field_name = arg
+    elif opt == "--auth_submitfieldText":
+      auth_submit_field_name_text = arg 
     elif opt == "--auth_firstsubmitfield":
       auth_first_submit_field_name = arg
     elif opt == "--auth_exclude":
@@ -476,7 +480,7 @@ def main(argv):
                 sumbitField = driver.find_element_by_xpath("//*[(translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='login' and (@type='submit' or @type='button')) or @type='submit' or @type='button']")
                 sumbitField.click()
         else:
-            def find_element(name, xpath):
+            def find_element(name, xpath, innerHTML):
                 element = None
                 try:
                     element = driver.find_element_by_id(name)
@@ -485,7 +489,21 @@ def main(argv):
                         element = driver.find_element_by_name(name)
                     except NoSuchElementException:
                         try:
-                            element = driver.find_elements_by_class_name(name)[0]                       
+                            elements = driver.find_elements_by_class_name(name)
+
+                            if len(elements) == 1 :
+                              for e in elements:
+                                  element = e
+                                  return element
+
+                            if len(elements) > 1 :
+                              for e in elements:
+                                  html = e.get_attribute('innerHTML')
+                                  if html == innerHTML:
+                                    element = e
+                                    return element
+
+
                         except NoSuchElementException:
                             if xpath is None:
                                 raise
@@ -496,20 +514,20 @@ def main(argv):
 
 
             if auth_username_field_name:
-                userField = find_element(auth_username_field_name, None)
+                userField = find_element(auth_username_field_name, None, None)
                 userField.clear()
                 userField.send_keys(auth_username)
 
             if auth_first_submit_field_name:
-                find_element(auth_first_submit_field_name, "//input[@type='submit']").click()
+                find_element(auth_first_submit_field_name, "//input[@type='submit']", None).click()
 
             if auth_password_field_name:
-                passwordField = find_element(auth_password_field_name, None)
+                passwordField = find_element(auth_password_field_name, None, None)
                 passwordField.clear()
                 passwordField.send_keys(auth_password)
 
             if auth_submit_field_name:
-                find_element(auth_submit_field_name, "//input[@type='submit']").click()
+                find_element(auth_submit_field_name, "//input[@type='submit']", auth_submit_field_name_text).click()
 
         # Wait for all requests to finish - not needed?
         time.sleep(30)
